@@ -1,0 +1,63 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    db_name: wordpress_db
+    db_user: wordpress_user
+    db_password: secure_db_password
+
+  tasks:
+    - name: Stop Nginx service
+      systemd:
+        name: nginx
+        state: stopped
+        enabled: no
+
+    - name: Remove Nginx
+      apt:
+        name: nginx
+        state: absent
+
+    - name: Stop MariaDB service
+      systemd:
+        name: mariadb
+        state: stopped
+        enabled: no
+
+    - name: Remove MariaDB server
+      apt:
+        name: mariadb-server
+        state: absent
+
+    - name: Drop WordPress database
+      mysql_db:
+        login_user: root
+        login_password: "{{ db_password }}"
+        name: "{{ db_name }}"
+        state: absent
+
+    - name: Remove WordPress database user
+      mysql_user:
+        login_user: root
+        login_password: "{{ db_password }}"
+        name: "{{ db_user }}"
+        state: absent
+
+    - name: Remove UFW rules for HTTP and HTTPS
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+        proto: tcp
+        state: absent
+      loop:
+        - '80'
+        - '443'
+
+    - name: Disable OpenSSH on UFW
+      ufw:
+        rule: allow
+        name: OpenSSH
+        state: absent
+
+    # Optionally, you can add tasks to remove PHP and its extensions if they were installed solely for WordPress
+    # Additionally, you may want to remove any configuration files or directories related to Nginx, WordPress, and MariaDB if needed
