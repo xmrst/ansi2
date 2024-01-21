@@ -1,6 +1,6 @@
 ---
 - name: Update and Install HestiaCP
-  hosts: your_server_group
+  hosts: all
   become: yes
   tasks:
     - name: Update apt repo
