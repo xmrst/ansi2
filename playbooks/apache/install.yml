@@ -1,0 +1,25 @@
+- hosts: test_server_1
+  become: yes
+  vars_files:
+    - /home/x/git/ansi2/vault/secret.yml
+
+  pre_tasks:
+    - name: Install Ubuntu Updates
+      ansible.builtin.apt:
+        upgrade: dist
+        update_cache: yes
+
+  tasks:
+    - name: Install Apache and PHPs
+      ansible.builtin.apt:
+        name: 
+          - apache2
+          - libapache2-mod-php
+        state: latest
+        update_cache: yes
+
+    - name: Start and enable Apache
+      ansible.builtin.service:
+        name: apache2
+        state: started
+        enabled: yes

@@ -3,6 +3,8 @@
 
 - hosts: all
   become: true
+  vars_files:
+    - secret.yml
   tasks:
 
   - name: update repo index
@@ -12,10 +14,10 @@
   - name: install apache2 package
     apt:
       name: apache2
-      state: latest
+      state: absent
 
 
   - name: add php support for apache
-    apt: 
+    apt:
       name: libapache2-mod-php
-      state: latest
+      state: absent
